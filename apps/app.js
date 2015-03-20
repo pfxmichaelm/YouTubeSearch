@@ -28,7 +28,10 @@ $(document).ready(function() {
 			var item = results.items[i];
 			console.log('[%s] Image URL: %s', item.id.videoId, item.snippet.thumbnails.medium.url);
 			//image += '<div>' + item.snippet.thumbnails.medium.url + '</div>';
-			$('img').attr('src', item.snippet.thumbnails.medium.url);
+			//$('img').attr('src', item.snippet.thumbnails.medium.url);
+			html += '<img' + " " + 'src=' + item.snippet.thumbnails.medium.url + " " + 'height="100px"' + " " + 'width="100px"' + '>';
+			$('#search-results').html(html);
+			console.log(html);
 		}
 	}
 
