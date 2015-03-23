@@ -1,4 +1,15 @@
 $(document).ready(function() {
+	var vidID = "", done = false, player;
+
+    function initIframe() {
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);	
+    }
+
 	function getRequest(searchTerm) {
 		var params = {
 			part: 'snippet',
@@ -26,12 +37,15 @@ $(document).ready(function() {
 		var html = "";
 		for(var i in results.items) {
 			var item = results.items[i];
-			console.log('[%s] Image URL: %s', item.id.videoId, item.snippet.thumbnails.medium.url);
+			vidID = item.id.videoId;
+			console.log('ID1: ' + vidID);
+			//console.log('[%s] Image URL: %s', item.id.videoId, item.snippet.thumbnails.medium.url);
 			//image += '<div>' + item.snippet.thumbnails.medium.url + '</div>';
 			//$('img').attr('src', item.snippet.thumbnails.medium.url);
-			html += '<img' + " " + 'src=' + item.snippet.thumbnails.medium.url + " " + 'height="100px"' + " " + 'width="100px"' + '>';
+			html += '<img' + " " + 'src=' + item.snippet.thumbnails.medium.url + " " + 'alt=' + vidID + " " + 'class="thumbs"' + 'height="100px"' + " " + 'width="100px"' + '>';
 			$('#search-results').html(html);
-			console.log(html);
+			//console.log(html);
+			selThumbnail();
 		}
 	}
 
@@ -43,4 +57,66 @@ $(document).ready(function() {
 		});
 	});
 
+    function selThumbnail() {
+    	// need to select on click and play video 
+    	$('#search-results').children().click(function() {
+    		vidID = $(this).attr('alt');
+    		console.log('click: ' + vidID);
+    		//console.log('click: ' + $('img').attr('alt'));
+            playvid(vidID);
+
+    	}); 
+    }
+
+    // 3. This function creates an <iframe> (and YouTube player)
+    //    after the API code downloads.
+    function playvid(vidID) {
+      player = new YT.Player('player', {
+        height: '390',
+        width: '640',
+        videoId: vidID,
+        //videoId: 'M7lc1UVf-VE',
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+
+/*    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        height: '390',
+        width: '640',
+        videoId: 'M7lc1UVf-VE',
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+*/
+    // 4. The API will call this function when the video player is ready.
+    function onPlayerReady(event) {
+      event.target.playVideo();
+    }	
+
+    // 5. The API calls this function when the player's state changes.
+    //    The function indicates that when playing a video (state=1),
+    //    the player should play for six seconds and then stop.
+    function onPlayerStateChange(event) {
+      // some issue with setting done - false.......
+      done = false; 
+      if (event.data == YT.PlayerState.PLAYING && !done) {
+        setTimeout(pauseVideo, 6000);
+        done = true;
+      }
+    }
+    
+    function pauseVideo() {
+      player.pauseVideo();
+      player.destroy();     
+      selThumbnail();
+    }    
+    initIframe();
 });
