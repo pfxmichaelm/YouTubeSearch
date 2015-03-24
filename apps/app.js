@@ -38,7 +38,7 @@ $(document).ready(function() {
 		for(var i in results.items) {
 			var item = results.items[i];
 			vidID = item.id.videoId;
-			console.log('ID1: ' + vidID);
+			//console.log('ID1: ' + vidID);
 			//console.log('[%s] Image URL: %s', item.id.videoId, item.snippet.thumbnails.medium.url);
 			//image += '<div>' + item.snippet.thumbnails.medium.url + '</div>';
 			//$('img').attr('src', item.snippet.thumbnails.medium.url);
@@ -81,6 +81,7 @@ $(document).ready(function() {
           'onStateChange': onPlayerStateChange
         }
       });
+      //done = false;
     }
 
 
@@ -105,8 +106,7 @@ $(document).ready(function() {
     //    The function indicates that when playing a video (state=1),
     //    the player should play for six seconds and then stop.
     function onPlayerStateChange(event) {
-      // some issue with setting done - false.......
-      done = false; 
+      // some issue with setting done - false....... 
       if (event.data == YT.PlayerState.PLAYING && !done) {
         setTimeout(pauseVideo, 6000);
         done = true;
@@ -116,7 +116,10 @@ $(document).ready(function() {
     function pauseVideo() {
       player.pauseVideo();
       player.destroy();     
-      selThumbnail();
-    }    
+      //selThumbnail();
+      console.log('done= ', done);
+      done = false;
+    }
+
     initIframe();
 });
